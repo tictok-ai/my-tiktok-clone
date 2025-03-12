@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TICTOK</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: black;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        #videoFeed {
+            width: 300px;
+            height: 500px;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            border-radius: 10px;
+        }
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            scroll-snap-align: start;
+        }
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .controls {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        button {
+            background: red;
+            border: none;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>TICTOK</h1>
+    <input type="file" id="uploadVideo" accept="video/*">
+    <button onclick="upload()">Upload Video</button>
+    <div id="videoFeed"></div>
+
+    <script>
+        function upload() {
+            const input = document.getElementById('uploadVideo');
+            if (input.files.length === 0) return;
+            
+            const file = input.files[0];
+            const url = URL.createObjectURL(file);
+            
+            const container = document.createElement('div');
+            container.classList.add('video-container');
+            
+            const video = document.createElement('video');
+            video.src = url;
+            video.controls = false;
+            video.loop = true;
+            video.muted = true;
+            video.autoplay = true;
+            
+            const controls = document.createElement('div');
+            controls.classList.add('controls');
+            
+            const likeButton = document.createElement('button');
+            likeButton.textContent = '❤️ 0';
+            let likes = 0;
+            likeButton.onclick = () => {
+                likes++;
+                likeButton.textContent = `❤️ ${likes}`;
+            };
+            
+            controls.appendChild(likeButton);
+            container.appendChild(video);
+            container.appendChild(controls);
+            document.getElementById('videoFeed').appendChild(container);
+        }
+        
+        document.getElementById('videoFeed').addEventListener('scroll', function() {
+            const videos = document.querySelectorAll('video');
+            videos.forEach(video => {
+                const rect = video.getBoundingClientRect();
+                if (rect.top >= 0 && rect.bottom <= window.innerHeight) {
+                    video.play();
+                } else {
+                    video.pause();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
